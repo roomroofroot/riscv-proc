@@ -17,9 +17,17 @@ Along with this, a minimal SIMD implementation has been provided.
 Most RV32I Base Integer instr., except unsigned instr. and few I-type, B-type, U-type instr.   
 Also supports `mul` and `mulh` instr. from the RV32M Multiply Extension.  
 
-To use SIMD instr., use `csimd.sv` in place of `common.sv`
+To use SIMD instr., use `csimd.sv` in place of `common.sv`  
+
+## TODO
+- [ ] Proper documentation
+- [ ] Test SIMD instr.
+- [ ] Basic branch prediction
+- [ ] Support for RISC-V [BitManip](https://docs.riscv.org/reference/isa/unpriv/b-st-ext.html) extension (for use with SIMD)
+- [ ] Make SIMD instr. compatible with RISC-V [P](https://www.jhauser.us/RISCV/ext-P/) extension
 
 ## References
 - [Digital Design and Computer Architecture: RISC-V Edition](https://pages.hmc.edu/harris/ddca/)  
 - [RISC-V Pipelined implementation](https://github.com/princeofyozgat/riscv)
 - [RISC-V Reference](https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/notebooks/RISCV/RISCV_CARD.pdf)
+- [RISC-V "M" Extension](https://docs.riscv.org/reference/isa/unpriv/m-st-ext.html)

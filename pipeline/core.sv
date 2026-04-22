@@ -7,7 +7,7 @@ module top(
 
   // instantiate processor and memories
   riscv riscv(clk, reset, PC_f, Instr_f, MemWrite_m,
-                       DataAdr_m, WriteData_m, ReadData_m);
+              DataAdr_m, WriteData_m, ReadData_m);
   imem imem(PC_f, Instr_f);
   dmem dmem(clk, MemWrite_m, DataAdr_m, WriteData_m, ReadData_m);
 endmodule
@@ -129,7 +129,7 @@ module datapath(
 );
 
 // IF
-  logic [31:0] PCPlus4_f;
+  logic [31:0] PCPlus4_f, PCNext_f;
 // ID
   logic [31:0] Instr_d, PC_d, PCPlus4_d;
   logic [31:0] rd1_d, rd2_d;
@@ -147,7 +147,8 @@ module datapath(
   logic [31:0] PCPlus4_w, PCTarget_w, Result_w;
 
 // IF
-  flopenr #(32) pcreg(clk, reset, ~stall_f, PCPlus4_f, PC_f);
+  mux2 #(32) pcmux(PCPlus4_f, PCTarget_e, PCSrc_e, PCNext_f);
+  flopenr #(32) pcreg(clk, reset, ~stall_f, PCNext_f, PC_f);
   adder pcadd(PC_f, 32'd4, PCPlus4_f);
 
 // ID

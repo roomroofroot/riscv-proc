@@ -14,13 +14,14 @@ module maindec(
 
   always @ (*)
     case(op)
-      7'b0000011: controls <= 11'b1_00_1_0_01_0_00_0; // lw
-      7'b0100011: controls <= 11'b0_01_1_1_00_0_00_0; // sw
-      7'b0110011: controls <= 11'b1_xx_0_0_00_0_10_0; // R-type
-      7'b1100011: controls <= 11'b0_10_0_0_00_1_01_0; // beq
-      7'b0010011: controls <= 11'b1_00_1_0_00_0_10_0; // I-type ALU
-      7'b1101111: controls <= 11'b1_11_0_0_10_0_00_1; // jal
-      default: controls <= 11'bx_xx_x_x_xx_x_xx_x; // ???
+      7'b0000011: controls = 11'b1_00_1_0_01_0_00_0; // lw
+      7'b0100011: controls = 11'b0_01_1_1_00_0_00_0; // sw
+      7'b0110011: controls = 11'b1_xx_0_0_00_0_10_0; // R-type
+      7'b1100011: controls = 11'b0_10_0_0_00_1_01_0; // beq
+      7'b0010011: controls = 11'b1_00_1_0_00_0_10_0; // I-type ALU
+      7'b1101111: controls = 11'b1_11_0_0_10_0_00_1; // jal
+      7'b0000000: controls = 11'b0_00_0_0_00_0_00_0; // reset/nop
+      default: controls = 11'bx_xx_x_x_xx_x_xx_x; // ???
     endcase
 endmodule
 
@@ -34,37 +35,37 @@ module aludec(
 );
   always @ (*)
     case(ALUOp)
-      2'b00: ALUControl <= 4'b0000; // addition
-      2'b01: ALUControl <= 4'b0001; // subtraction
+      2'b00: ALUControl = 4'b0000; // addition
+      2'b01: ALUControl = 4'b0001; // subtraction
 
       default: case(funct3) // R-type or I-type ALU
 
         3'b000: case(funct7)
-          7'b0100000: ALUControl <= 4'b0001; // sub
-          7'b0000001: ALUControl <= 4'b1000; // mul
-          default: ALUControl <= 4'b0000;    // add, addi
+          7'b0100000: ALUControl = 4'b0001; // sub
+          7'b0000001: ALUControl = 4'b1000; // mul
+          default: ALUControl = 4'b0000;    // add, addi
         endcase
         3'b001: case(funct7)
-          7'b0000001: ALUControl <= 4'b1001; // mulh
-          default: ALUControl <= 4'b0110;    // sll
+          7'b0000001: ALUControl = 4'b1001; // mulh
+          default: ALUControl = 4'b0110;    // sll
         endcase
-        3'b010: ALUControl <= 4'b0101;       // slt, slti
+        3'b010: ALUControl = 4'b0101;       // slt, slti
 
         3'b011: case(funct7)
-          7'b1000000: ALUControl <= 4'b1100; // acc8
-          7'b1000001: ALUControl <= 4'b1101; // acc16
-          7'b1000010: ALUControl <= 4'b1110; // add8
-          7'b1000011: ALUControl <= 4'b1111; // add16
-          7'b1100000: ALUControl <= 4'b1010; // mul8
-          7'b1100001: ALUControl <= 4'b1011; // mul16
-          default: ALUControl <= 4'bxxxx;
+          7'b1000000: ALUControl = 4'b1100; // acc8
+          7'b1000001: ALUControl = 4'b1101; // acc16
+          7'b1000010: ALUControl = 4'b1110; // add8
+          7'b1000011: ALUControl = 4'b1111; // add16
+          7'b1100000: ALUControl = 4'b1010; // mul8
+          7'b1100001: ALUControl = 4'b1011; // mul16
+          default: ALUControl = 4'bxxxx;
         endcase
 
-        3'b100: ALUControl <= 4'b0100;       // xor, xori
-        3'b101: ALUControl <= 4'b0111;       // srl
-        3'b110: ALUControl <= 4'b0011;       // or, ori
-        3'b111: ALUControl <= 4'b0010;       // and, andi
-        default: ALUControl <= 4'bxxxx;      // ???
+        3'b100: ALUControl = 4'b0100;       // xor, xori
+        3'b101: ALUControl = 4'b0111;       // srl
+        3'b110: ALUControl = 4'b0011;       // or, ori
+        3'b111: ALUControl = 4'b0010;       // and, andi
+        default: ALUControl = 4'bxxxx;      // ???
 
       endcase
     endcase
@@ -78,16 +79,17 @@ module alu(
   output logic zero
 );
   logic [31:0] condinvb, sum;
-  logic sub;
+  logic sub, v;
 
   logic c1, c2, acc;
   logic [31:0] ans;
   logic l1, l2, mulh;
   logic [31:0] m;
 
-  assign sub = (alucontrol[1:0] == 2'b01);
+  assign sub = ({alucontrol[3], alucontrol[1:0]} == 3'b001);
   assign condinvb = sub ? ~b : b; // for subtraction or slt
   assign sum = a + condinvb + sub;
+  assign v = (~(sub^a[31]^b[31]) & (a[31]^sum[31]));
 
   assign c1 = ({alucontrol[3:2],alucontrol[0]} == 3'b110);
   assign c2 = (alucontrol[3:2] == 2'b11);
@@ -101,32 +103,31 @@ module alu(
 
   multiplier mul(a, b, l1, l2, mulh, m);
 
-  always @ (*) begin
+  always @ (*)
     case (alucontrol)
-      4'b0000: result <= ans;          // addition
-      4'b0001: result <= sum;          // subtraction
-      4'b0010: result <= a & b;        // and
-      4'b0011: result <= a | b;        // or
-      4'b0100: result <= a ^ b;        // xor
-      4'b0101: result <= sum[31];      // slt
-      4'b0110: result <= a << b[4:0];  // sll
-      4'b0111: result <= a >> b[4:0];  // srl
+      4'b0000: result = ans;          // addition
+      4'b0001: result = sum;          // subtraction
+      4'b0010: result = a & b;        // and
+      4'b0011: result = a | b;        // or
+      4'b0100: result = a ^ b;        // xor
+      4'b0101: result = sum[31]^v;      // slt
+      4'b0110: result = a << b[4:0];  // sll
+      4'b0111: result = a >> b[4:0];  // srl
 
       // extended operations
-      4'b1000: result <= m;          // mul
-      4'b1001: result <= m;          // mulh
+      4'b1000: result = m;            // mul
+      4'b1001: result = m;            // mulh
 
       // SIMD operations
-      4'b1010: result <= m;            // mul8
-      4'b1011: result <= m;            // mul16
-      4'b1100: result <= ans;          // acc8
-      4'b1101: result <= ans;          // acc16
-      4'b1110: result <= ans;          // add8
-      4'b1111: result <= ans;          // add16
+      4'b1010: result = m;            // mul8
+      4'b1011: result = m;            // mul16
+      4'b1100: result = ans;          // acc8
+      4'b1101: result = ans;          // acc16
+      4'b1110: result = ans;          // add8
+      4'b1111: result = ans;          // add16
 
-      default: result <= 0;
+      default: result = 0;
   endcase
-  end
 
   assign zero = (result == 32'b0);
 endmodule
@@ -205,14 +206,14 @@ module extend(
   always @ (*)
     case(immsrc)
              // I-type
-      2'b00: immext <= {{20{instr[31]}}, instr[31:20]};
+      2'b00: immext = {{20{instr[31]}}, instr[31:20]};
              // S-type (stores)
-      2'b01: immext <= {{20{instr[31]}}, instr[31:25], instr[11:7]};
+      2'b01: immext = {{20{instr[31]}}, instr[31:25], instr[11:7]};
              // B-type (branches)
-      2'b10: immext <= {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
+      2'b10: immext = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
              // J-type (jal)
-      2'b11: immext <= {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
-      default: immext <= 32'bx; // undefined
+      2'b11: immext = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
+      default: immext = 32'bx; // undefined
     endcase
 endmodule
 
@@ -293,7 +294,7 @@ module regfile(
 );
   logic [31:0] rf[31:0];
 
-  always_ff @(posedge clk)
+  always_ff @(negedge clk)
     if (we3) rf[a3] <= wd3;
 
   assign rd1 = (a1 != 0) ? rf[a1] : 0;
