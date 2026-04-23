@@ -40,32 +40,34 @@ module aludec(
 
       default: case(funct3) // R-type or I-type ALU
 
-        3'b000: case(funct7)
-          7'b0100000: ALUControl = 4'b0001; // sub
-          7'b0000001: ALUControl = 4'b1000; // mul
-          default: ALUControl = 4'b0000;    // add, addi
+        3'b000: case({funct7, opb5})
+          8'b0100000_1: ALUControl = 4'b0001; // sub
+          8'b0000001_0: ALUControl = 4'b1000; // mul
+          default: ALUControl = 4'b0000;      // add, addi
         endcase
-        3'b001: case(funct7)
-          7'b0000001: ALUControl = 4'b1001; // mulh
-          default: ALUControl = 4'b0110;    // sll
+
+        3'b001: case({funct7, opb5})
+          8'b0000001_1: ALUControl = 4'b1001; // mulh
+          default: ALUControl = 4'b0110;      // sll
         endcase
-        3'b010: ALUControl = 4'b0101;       // slt, slti
+
+        3'b010: ALUControl = 4'b0101;         // slt, slti
 
         3'b011: case(funct7)
-          7'b1000000: ALUControl = 4'b1100; // acc8
-          7'b1000001: ALUControl = 4'b1101; // acc16
-          7'b1000010: ALUControl = 4'b1110; // add8
-          7'b1000011: ALUControl = 4'b1111; // add16
-          7'b1100000: ALUControl = 4'b1010; // mul8
-          7'b1100001: ALUControl = 4'b1011; // mul16
+          7'b1000000: ALUControl = 4'b1100;   // acc8
+          7'b1000001: ALUControl = 4'b1101;   // acc16
+          7'b1000010: ALUControl = 4'b1110;   // add8
+          7'b1000011: ALUControl = 4'b1111;   // add16
+          7'b1100000: ALUControl = 4'b1010;   // mul8
+          7'b1100001: ALUControl = 4'b1011;   // mul16
           default: ALUControl = 4'bxxxx;
         endcase
 
-        3'b100: ALUControl = 4'b0100;       // xor, xori
-        3'b101: ALUControl = 4'b0111;       // srl
-        3'b110: ALUControl = 4'b0011;       // or, ori
-        3'b111: ALUControl = 4'b0010;       // and, andi
-        default: ALUControl = 4'bxxxx;      // ???
+        3'b100: ALUControl = 4'b0100;         // xor, xori
+        3'b101: ALUControl = 4'b0111;         // srl
+        3'b110: ALUControl = 4'b0011;         // or, ori
+        3'b111: ALUControl = 4'b0010;         // and, andi
+        default: ALUControl = 4'bxxxx;        // ???
 
       endcase
     endcase
@@ -110,7 +112,7 @@ module alu(
       4'b0010: result = a & b;        // and
       4'b0011: result = a | b;        // or
       4'b0100: result = a ^ b;        // xor
-      4'b0101: result = sum[31]^v;      // slt
+      4'b0101: result = sum[31]^v;    // slt
       4'b0110: result = a << b[4:0];  // sll
       4'b0111: result = a >> b[4:0];  // srl
 
@@ -139,23 +141,20 @@ module carry_adder(
   output logic [31:0] y
 );
   logic [8:0] x0, x1, x2, x3;
-  logic [16:0] z0, z1;
+  logic c8, c16, c24; // carry bits
 
   always @ (*) begin
     x0 = a[7:0] + b[7:0];
-    x1 = a[15:8] + b[15:8];
-    x2 = a[23:16] + b[23:16];
-    x3 = a[31:24] + b[31:24];
+    c8 = ~c1 & x0[8];
+    x1 = a[15:8] + b[15:8] + c8;
+    c16 = ~c2 & x1[8];
+    x2 = a[23:16] + b[23:16] + c16;
+    c24 = ~c1 & x2[8];
+    x3 = a[31:24] + b[31:24] + c24;
 
-    if (c1 & acc) y = x3 + x2 + x1 + x0;
-    else if (c1) y = {x3[7:0], x2[7:0], x1[7:0], x0[7:0]};
-    else begin
-      z0 = {17'b0, x1+x0[8], x0[7:0]};
-      z1 = {17'b0, x3+x2[8], x3[7:0]};
-      if (c2 & acc) y = z1 + z0;
-      else if (c2) y = {z1[15:0], z0[15:0]};
-      else y = {z1[15:0]+z0[16], z0[15:0]};
-    end
+    if (acc & c1) y = x3[7:0] + x2[7:0] + x1[7:0] + x0[7:0];
+    else if (acc) y = {x3, x2[7:0]} + {x1, x0[7:0]};
+    else y = {x3[7:0], x2[7:0], x1[7:0], x0[7:0]};
   end
 endmodule
 
@@ -169,7 +168,7 @@ module multiplier(
   logic [15:0] z0, z1;
   logic [63:0] res;
 
-  always @ (*) begin
+  always @ (*)
     if (l1) begin
       x0 = a[7:0] * b[7:0];
       x1 = a[15:8] * b[15:8];
@@ -187,7 +186,6 @@ module multiplier(
       if (mulh) y = res[63:32];
       else y = res[31:0];
     end
-  end
 endmodule
 
 

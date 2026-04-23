@@ -40,21 +40,23 @@ module aludec(
 
       default: case(funct3) // R-type or I-type ALU
 
-        3'b000: case(funct7)
-          7'b0100000: ALUControl = 4'b0001; // sub
-          7'b0000001: ALUControl = 4'b1000; // mul
-          default: ALUControl = 4'b0000;    // add, addi
+        3'b000: case({funct7, opb5})
+          8'b0100000_1: ALUControl = 4'b0001; // sub
+          8'b0000001_0: ALUControl = 4'b1000; // mul
+          default: ALUControl = 4'b0000;      // add, addi
         endcase
-        3'b001: case(funct7)
-          7'b0000001: ALUControl = 4'b1001; // mulh
-          default: ALUControl = 4'b0110;    // sll
+
+        3'b001: case({funct7, opb5})
+          8'b0000001_1: ALUControl = 4'b1001; // mulh
+          default: ALUControl = 4'b0110;      // sll
         endcase
-        3'b010: ALUControl = 4'b0101;       // slt, slti
-        3'b100: ALUControl = 4'b0100;       // xor, xori
-        3'b101: ALUControl = 4'b0111;       // srl
-        3'b110: ALUControl = 4'b0011;       // or, ori
-        3'b111: ALUControl = 4'b0010;       // and, andi
-        default: ALUControl = 4'bxxxx;      // ???
+
+        3'b010: ALUControl = 4'b0101;         // slt, slti
+        3'b100: ALUControl = 4'b0100;         // xor, xori
+        3'b101: ALUControl = 4'b0111;         // srl
+        3'b110: ALUControl = 4'b0011;         // or, ori
+        3'b111: ALUControl = 4'b0010;         // and, andi
+        default: ALUControl = 4'bxxxx;        // ???
 
       endcase
     endcase
