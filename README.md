@@ -17,7 +17,7 @@ Along with this, a minimal SIMD implementation has been provided.
 I am using `iverilog` and `gtkwave` to compile and test.  
 To test either the single-cycle or pipelined processors -  
 modify test.hex (or change mem.sv to read another .hex file)  
-use `iverilog` to compile the testbench, run this within `pipeline/` or `single/`  
+use `iverilog` to compile the testbench 
 ```sh
 cd pipeline/
 iverilog -g2012 core.sv ../csimd.sv mem.sv tb.sv -o risc_sim
