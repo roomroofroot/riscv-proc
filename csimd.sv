@@ -75,8 +75,8 @@ endmodule
 
 
 module alu(
-  input  logic [31:0] a, b,
-  input  logic [3:0] alucontrol,
+  input logic [31:0] a, b,
+  input logic [3:0] alucontrol,
   output logic [31:0] result,
   output logic zero
 );

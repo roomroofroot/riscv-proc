@@ -11,10 +11,10 @@ module testbench();
   // initialize test
   initial
     begin
-      reset <= 1; # 22; reset <= 0;
       $dumpfile ("tb.vcd");
       $dumpvars (0, testbench);
-      #1000;
+      reset <= 1; # 12; reset <= 0;
+      #10000;
       $finish;
   end
 

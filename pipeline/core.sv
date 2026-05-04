@@ -207,7 +207,7 @@ module hazard(
       else if ((rs2_e == rd_w) & RegWrite_w) forward_be = 2'b01;
   end
 
-  assign lwstall_d = ResultSrcb0_e & ((rs1_d == rd_e) | (rs2_d == rd_e));
+  assign lwstall_d = ResultSrcb0_e & (rd_e != 0) & ((rs1_d == rd_e) | (rs2_d == rd_e));
   assign stall_d = lwstall_d;
   assign stall_f = lwstall_d;
   assign flush_d = PCSrc_e;
