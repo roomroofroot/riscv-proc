@@ -27,8 +27,8 @@ gtkwave tb.vcd
 ## Supported Instructions
 - Most RV32I Base Integer instr., except unsigned, U-type, and a few I-type and B-type
 - `mul` and `mulh` from the RV32M Multiply Extension
-- Basic SIMD instr. (to use SIMD, use `csimd.sv` in place of `common.sv`)
-Refer `csimd.sv` for instruction encoding details  
+- Basic SIMD instr. (to use SIMD, use `csimd.sv` in place of `common.sv`)  
+Refer to `csimd.sv` for instruction encoding details  
 **Note**: SIMD instructions reuse encodings of unsigned R-type, considering they aren't implemented yet. (see TODO)
 
 ## TODO
