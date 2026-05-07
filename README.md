@@ -1,6 +1,6 @@
 # riscv-proc
 
-SystemVerilog implementations of single-cycle and pipelined RV32 processors.  
+Implementing single-cycle, pipelined variants of an RV32 processor in SystemVerilog.  
 
 Follows the single-cycle design and pipeline architecture outlined in the RISC-V edition of  
 [Digital Design and Computer Architecture](https://pages.hmc.edu/harris/ddca/) _by David and Sarah Harris_.
@@ -11,7 +11,7 @@ Along with this, a minimal SIMD implementation has been provided.
 `single/core.sv` - slightly modified single-cycle implementation from the book  
 `pipeline/core.sv` - pipelined implementation, modified version of [another project](https://github.com/princeofyozgat/riscv)  
 `common.sv` - modules common to `single/`, `pipeline/`  
-`csimd.sv` - modified common.sv to support SIMD with component reuse
+`csimd.sv` - `common.sv`, but with SIMD support while reusing components
 
 ## Tools and Usage
 I've used `iverilog` and `gtkwave` to compile and test  
@@ -26,14 +26,15 @@ gtkwave tb.vcd
 
 ## Supported Instructions
 - Most RV32I Base Integer instr., except unsigned, U-type, and a few I-type and B-type
-- `mul` and `mulh` from the RV32M Multiply Extension
-- Basic SIMD instr. (to use SIMD, use `csimd.sv` in place of `common.sv`)  
+- `mul` and `mulh` from the RV32M Multiply Extension  
+**Note**: these instr. execute in 1 cycle, like in some digital signal processors (not realistic for general processors).
+- Basic SIMD unsigned instr. (to use SIMD, use `csimd.sv` in place of `common.sv`)  
 Refer to `csimd.sv` for instruction encoding details  
-**Note**: SIMD instructions reuse encodings of unsigned R-type, considering they aren't implemented yet. (see TODO)
+**Note**: SIMD instructions reuse encodings of unsigned R-type, considering they aren't implemented yet. (see TODO)  
 
 ## TODO
 - [ ] Basic branch prediction
-- [ ] Compatibility with RISC-V [Packed](https://www.jhauser.us/RISCV/ext-P/) extension (SIMD instr.)
+- [ ] Compatibility with RISC-V [Packed](https://www.jhauser.us/RISCV/ext-P/) extension (SIMD)
 - [ ] Support for RISC-V [BitManip](https://docs.riscv.org/reference/isa/unpriv/b-st-ext.html) extension (for use with SIMD)
 
 ## References

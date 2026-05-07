@@ -99,8 +99,8 @@ module alu(
 
   carry_adder c_add(a, b, c1, c2, acc, ans);
 
-  assign l1 = (alucontrol[3:1] == 3'b101);
-  assign l2 = (alucontrol[0] == 1'b0);
+  assign l1 = (alucontrol[3:0] == 4'b1010);
+  assign l2 = (alucontrol[3:0] == 4'b1011);
   assign mulh = (alucontrol[3:0] == 4'b1001);
 
   multiplier mul(a, b, l1, l2, mulh, m);
