@@ -15,7 +15,8 @@ Along with this, a minimal SIMD implementation has been provided.
 
 ## Tools and Usage
 I've used `iverilog` and `gtkwave` to compile and test  
-To test, modify `test.hex` (or change `mem.sv` to read another hexfile)  
+To test, modify `mem.sv` to read specified hexfile  
+See `test/` for sample test files  
 Run the following within `single/` or `pipeline/`
 ```sh
 iverilog -g2012 core.sv ../csimd.sv mem.sv tb.sv -o risc_sim
@@ -30,7 +31,7 @@ gtkwave tb.vcd
 **Note**: these instr. execute in 1 cycle, like in some digital signal processors (not realistic for general processors).
 - Basic SIMD unsigned instr. (to use SIMD, use `csimd.sv` in place of `common.sv`)  
 Refer to `csimd.sv` for instruction encoding details  
-**Note**: SIMD instructions reuse encodings of unsigned R-type, considering they aren't implemented yet. (see TODO)  
+**Note**: SIMD instructions reuse encodings of unsigned R-type, which are not implemented (yet). 
 
 ## TODO
 - [ ] Basic branch prediction
