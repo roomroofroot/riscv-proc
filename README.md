@@ -52,3 +52,4 @@ Refer to [SIMD](./SIMD.md) for instruction encoding details
 - [RISC-V Docs](https://docs.riscv.org/reference/isa/unpriv/unpriv-index.html)
 - [RISC-V Pipelined implementation](https://github.com/princeofyozgat/riscv)
 - [RISC-V Reference Card](https://github.com/jameslzhu/riscv-card/releases/download/latest/riscv-card.pdf)
+- [CircuiTikz RISC-V H&H macro](https://github.com/ladnik/riscv-circuitikz) for design diagrams in `report.pdf`
