@@ -13,10 +13,12 @@ R-type unsigned encodings are reused for these instructions.
 | `mul8` | 011 | 1100000 | 
 | `mul16` | 011 | 1100001 |
 
+See `test/simd.txt` for example usage - use `test/simd.hex` for testing
+
 ## Implementation details
 - `add`, `add8`, `add16`, `acc8`, `acc16` use the `carry_adder` module, which has 4 separate byte-adders instead of a single 32-bit adder.
 2 bits `c1`, `c2` are passed to this module to decide whether to carry forward at each byte interval.
 `acc8` and `acc16` (accumulate functions) can reuse these byte-adders as well.
 - `mul`, `mulh`, `mul8`, `mul16` use the `multiplier` module, which is not yet synthesizable. These execute in 1 cycle (suitable for DSP-grade multipliers)
 
-Refer to `csimd.sv` for more details
+Refer to `csimd.sv` for more details  
