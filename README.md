@@ -30,8 +30,16 @@ gtkwave tb.vcd
 - `mul` and `mulh` from the RV32M Multiply Extension  
 **Note**: these instr. execute in 1 cycle, like in some digital signal processors (not realistic for general processors).
 - Basic SIMD unsigned instr. (to use SIMD, use `csimd.sv` in place of `common.sv`)  
-Refer to `csimd.sv` for instruction encoding details  
-**Note**: SIMD instructions reuse encodings of unsigned R-type, which are not implemented (yet). 
+Refer to [SIMD](./SIMD.md) for instruction encoding details  
+
+| Type | Instructions |
+|---|---|
+| R-type | `add`, `sub`, `slt`, `xor`, `sll`, `srl`, `or`, `and`, `mul`, `mulh` |
+| I-type | `addi`, `slti`, `xori`, `slli`, `srli`, `ori`, `andi`, `lw` |
+| S-type | `sw` |
+| B-type | `beq` |
+| J-type | `jal` |
+| SIMD | `acc8`, `acc16`, `add8`, `add16`, `mul8`, `mul16` |
 
 ## TODO
 - [ ] Basic branch prediction
