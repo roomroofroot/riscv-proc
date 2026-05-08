@@ -5,7 +5,8 @@ Implementing single-cycle, pipelined variants of an RV32 processor in SystemVeri
 Follows the single-cycle design and pipeline architecture outlined in the RISC-V edition of  
 [Digital Design and Computer Architecture](https://pages.hmc.edu/harris/ddca/) _by David and Sarah Harris_.
 
-Along with this, a minimal SIMD implementation has been provided.
+Along with this, a minimal SIMD implementation has been provided.  
+See the [report](./report.pdf) on design and testing.
 
 ## Files
 `single/core.sv` - slightly modified single-cycle implementation from the book  
